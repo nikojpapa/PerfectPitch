@@ -5,10 +5,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.AudioEvent;
+import be.tarsos.dsp.AudioProcessor;
+import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+import be.tarsos.dsp.pitch.PitchDetectionHandler;
+import be.tarsos.dsp.pitch.PitchDetectionResult;
+import be.tarsos.dsp.pitch.PitchProcessor;
 
 public class MainActvity extends AppCompatActivity {
     protected final String TAG = getClass().getSimpleName();
@@ -18,18 +27,40 @@ public class MainActvity extends AppCompatActivity {
 
     private Random rand= new Random();
 
+    Thread dispatcherThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_actvity);
 
-        Button play440= (Button) findViewById(R.id.button);
+        Button play440= (Button) findViewById(R.id.playButton);
 
         play440.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 playWave();
             }
         });
+
+        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+
+        PitchDetectionHandler pdh = new PitchDetectionHandler() {
+            @Override
+            public void handlePitch(PitchDetectionResult result,AudioEvent e) {
+                final float pitchInHz = result.getPitch();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView text = (TextView) findViewById(R.id.pitchDetectorText);
+                        text.setText("" + pitchInHz);
+                    }
+                });
+            }
+        };
+        AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
+        dispatcher.addAudioProcessor(p);
+        dispatcherThread= new Thread(dispatcher,"Audio Dispatcher");
+        dispatcherThread.start();
     }
 
     private void playWave() {

@@ -19,8 +19,17 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
+        android:text="Play Random Frequency"
+        android:id="@+id/playButton"
         android:layout_below="@+id/textView"
         android:layout_toEndOf="@+id/textView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="No Frequency"
+        android:id="@+id/pitchDetectorText"
+        android:layout_below="@+id/playButton"
+        android:layout_alignStart="@+id/playButton"/>
 </RelativeLayout>

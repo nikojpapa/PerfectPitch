@@ -1,5 +1,9 @@
 package com.papad.perfectpitch;
 
+import android.support.design.widget.TabLayout;
+import android.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,11 +33,44 @@ public class MainActvity extends AppCompatActivity {
 
     Thread dispatcherThread;
 
+    private FragmentManager mFragmentManager;
+
+    TabLayout.Tab guessTab, matchTab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_actvity);
 
+        mFragmentManager= getSupportFragmentManager();
+        mFragmentManager.enableDebugLogging(true);
+        FragmentTransaction fragmentTransaction = mFragmentManager
+                .beginTransaction();
+        fragmentTransaction.add(R.id.fragmentContainer, new GuessFrequencyFragment());
+        fragmentTransaction.commit();
+
+        TabLayout tabLayout = new TabLayout(getApplicationContext());
+
+        guessTab= tabLayout.newTab().setText("Guess Frequency");
+        matchTab= tabLayout.newTab().setText("Match Frequency");
+        tabLayout.addTab(guessTab);
+        tabLayout.addTab(matchTab);
+
+//        tabLayout.setOnTabSelectedListener();
+
+    }
+
+    private void playWave() {
+        int newIndex= rand.nextInt(88);
+        double waveFreq= frequencies[newIndex];
+        String noteName= noteNames[newIndex];
+
+        Toast.makeText(this, "Playing " + noteName + " at " + waveFreq + "Hz", Toast
+                .LENGTH_SHORT).show();
+        new PlayWave().execute(waveFreq);
+    }
+
+    private void setPlayButtonListener() {
         Button play440= (Button) findViewById(R.id.playButton);
 
         play440.setOnClickListener(new Button.OnClickListener() {
@@ -41,12 +78,14 @@ public class MainActvity extends AppCompatActivity {
                 playWave();
             }
         });
+    }
 
+    private void startPitchDetector() {
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
         PitchDetectionHandler pdh = new PitchDetectionHandler() {
             @Override
-            public void handlePitch(PitchDetectionResult result,AudioEvent e) {
+            public void handlePitch(PitchDetectionResult result, AudioEvent e) {
                 final float pitchInHz = result.getPitch();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -59,17 +98,7 @@ public class MainActvity extends AppCompatActivity {
         };
         AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
         dispatcher.addAudioProcessor(p);
-        dispatcherThread= new Thread(dispatcher,"Audio Dispatcher");
+        dispatcherThread = new Thread(dispatcher, "Audio Dispatcher");
         dispatcherThread.start();
-    }
-
-    private void playWave() {
-        int newIndex= rand.nextInt(88);
-        double waveFreq= frequencies[newIndex];
-        String noteName= noteNames[newIndex];
-
-        Toast.makeText(this, "Playing " + noteName + " at " + waveFreq + "Hz", Toast
-                .LENGTH_SHORT).show();
-        new PlayWave().execute(waveFreq);
     }
 }

@@ -70,7 +70,7 @@ public class MatchFrequencyFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.startPitchDetector(uri);
+//            mListener.startPitchDetector();
         }
     }
 
@@ -79,6 +79,7 @@ public class MatchFrequencyFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof MatchFrequencyFragCreated) {
             mListener = (MatchFrequencyFragCreated) context;
+            mListener.startPitchDetector();
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -103,6 +104,6 @@ public class MatchFrequencyFragment extends Fragment {
      */
     public interface MatchFrequencyFragCreated {
         // TODO: Update argument type and name
-        void startPitchDetector(Uri uri);
+        void startPitchDetector();
     }
 }

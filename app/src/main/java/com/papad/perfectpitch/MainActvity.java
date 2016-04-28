@@ -1,5 +1,6 @@
 package com.papad.perfectpitch;
 
+import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,7 +24,8 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 
-public class MainActvity extends AppCompatActivity {
+public class MainActvity extends AppCompatActivity implements GuessFrequencyFragment
+        .GuessFrequencyFragCreated, MatchFrequencyFragment.MatchFrequencyFragCreated {
     protected final String TAG = getClass().getSimpleName();
 
     private double[] frequencies= {27.5, 29.1352, 30.8677, 32.7032, 34.6478, 36.7081, 38.8909, 41.2034, 43.6535, 46.2493, 48.9994, 51.9131, 55, 58.2705, 61.7354, 65.4064, 69.2957, 73.4162, 77.7817, 82.4069, 87.3071, 92.4986, 97.9989, 103.826, 110, 116.541, 123.471, 130.813, 138.591, 146.832, 155.563, 164.814, 174.614, 184.997, 195.998, 207.652, 220, 233.082, 246.942, 261.626, 277.183, 293.665, 311.127, 329.628, 349.228, 369.994, 391.995, 415.305, 440, 466.164, 493.883, 523.251, 554.365, 587.33, 622.254, 659.255, 698.456, 739.989, 783.991, 830.609, 880, 932.328, 987.767, 1046.5, 1108.73, 1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98, 1661.22, 1760, 1864.66, 1975.53, 2093, 2217.46, 2349.32, 2489.02, 2637.02, 2793.83, 2959.96, 3135.96, 3322.44, 3520, 3729.31, 3951.07, 4186.01};
@@ -31,11 +33,11 @@ public class MainActvity extends AppCompatActivity {
 
     private Random rand= new Random();
 
-    Thread dispatcherThread;
+    Thread mDispatcherThread;
 
     private FragmentManager mFragmentManager;
 
-    TabLayout.Tab guessTab, matchTab;
+//    TabLayout.Tab guessTab, matchTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +51,12 @@ public class MainActvity extends AppCompatActivity {
         fragmentTransaction.add(R.id.fragmentContainer, new GuessFrequencyFragment());
         fragmentTransaction.commit();
 
-        TabLayout tabLayout = new TabLayout(getApplicationContext());
-
-        guessTab= tabLayout.newTab().setText("Guess Frequency");
-        matchTab= tabLayout.newTab().setText("Match Frequency");
-        tabLayout.addTab(guessTab);
-        tabLayout.addTab(matchTab);
+//        TabLayout tabLayout = new TabLayout(getApplicationContext());
+//
+//        guessTab= tabLayout.newTab().setText("Guess Frequency");
+//        matchTab= tabLayout.newTab().setText("Match Frequency");
+//        tabLayout.addTab(guessTab);
+//        tabLayout.addTab(matchTab);
 
 //        tabLayout.setOnTabSelectedListener();
 
@@ -70,7 +72,8 @@ public class MainActvity extends AppCompatActivity {
         new PlayWave().execute(waveFreq);
     }
 
-    private void setPlayButtonListener() {
+    public void setPlayButtonListener() {
+        Log.i(TAG, "play button initiated");
         Button play440= (Button) findViewById(R.id.playButton);
 
         play440.setOnClickListener(new Button.OnClickListener() {
@@ -80,7 +83,7 @@ public class MainActvity extends AppCompatActivity {
         });
     }
 
-    private void startPitchDetector() {
+    public void startPitchDetector() {
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
         PitchDetectionHandler pdh = new PitchDetectionHandler() {
@@ -98,7 +101,7 @@ public class MainActvity extends AppCompatActivity {
         };
         AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
         dispatcher.addAudioProcessor(p);
-        dispatcherThread = new Thread(dispatcher, "Audio Dispatcher");
-        dispatcherThread.start();
+        mDispatcherThread = new Thread(dispatcher, "Audio Dispatcher");
+        mDispatcherThread.start();
     }
 }

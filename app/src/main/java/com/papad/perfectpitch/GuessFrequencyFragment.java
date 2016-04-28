@@ -70,7 +70,7 @@ public class GuessFrequencyFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.setPlayButtonListener(uri);
+//            mListener.setPlayButtonListener(uri);
         }
     }
 
@@ -83,6 +83,12 @@ public class GuessFrequencyFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mListener.setPlayButtonListener();
     }
 
     @Override
@@ -103,6 +109,6 @@ public class GuessFrequencyFragment extends Fragment {
      */
     public interface GuessFrequencyFragCreated {
         // TODO: Update argument type and name
-        void setPlayButtonListener(Uri uri);
+        void setPlayButtonListener();
     }
 }

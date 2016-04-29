@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MatchFrequencyFragment.MatchFrequencyFragCreated} interface
+ * {@link MatchFrequencyFragment.MatchFrequencyFragListener} interface
  * to handle interaction events.
  * Use the {@link MatchFrequencyFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -27,7 +27,7 @@ public class MatchFrequencyFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private MatchFrequencyFragCreated mListener;
+    private MatchFrequencyFragListener mListener;
 
     public MatchFrequencyFragment() {
         // Required empty public constructor
@@ -77,13 +77,18 @@ public class MatchFrequencyFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof MatchFrequencyFragCreated) {
-            mListener = (MatchFrequencyFragCreated) context;
-            mListener.startPitchDetector();
+        if (context instanceof MatchFrequencyFragListener) {
+            mListener = (MatchFrequencyFragListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mListener.startPitchDetector();
     }
 
     @Override
@@ -102,8 +107,9 @@ public class MatchFrequencyFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface MatchFrequencyFragCreated {
+    public interface MatchFrequencyFragListener {
         // TODO: Update argument type and name
         void startPitchDetector();
+//        void disableButton(String id);
     }
 }

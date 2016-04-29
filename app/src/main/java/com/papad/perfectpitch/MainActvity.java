@@ -2,13 +2,14 @@ package com.papad.perfectpitch;
 
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,7 +27,7 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 
 public class MainActvity extends AppCompatActivity implements GuessFrequencyFragment
-        .GuessFrequencyFragCreated, MatchFrequencyFragment.MatchFrequencyFragCreated {
+        .GuessFrequencyFragListener, MatchFrequencyFragment.MatchFrequencyFragListener {
     protected final String TAG = getClass().getSimpleName();
 
     private double[] frequencies= {27.5, 29.1352, 30.8677, 32.7032, 34.6478, 36.7081, 38.8909, 41.2034, 43.6535, 46.2493, 48.9994, 51.9131, 55, 58.2705, 61.7354, 65.4064, 69.2957, 73.4162, 77.7817, 82.4069, 87.3071, 92.4986, 97.9989, 103.826, 110, 116.541, 123.471, 130.813, 138.591, 146.832, 155.563, 164.814, 174.614, 184.997, 195.998, 207.652, 220, 233.082, 246.942, 261.626, 277.183, 293.665, 311.127, 329.628, 349.228, 369.994, 391.995, 415.305, 440, 466.164, 493.883, 523.251, 554.365, 587.33, 622.254, 659.255, 698.456, 739.989, 783.991, 830.609, 880, 932.328, 987.767, 1046.5, 1108.73, 1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98, 1661.22, 1760, 1864.66, 1975.53, 2093, 2217.46, 2349.32, 2489.02, 2637.02, 2793.83, 2959.96, 3135.96, 3322.44, 3520, 3729.31, 3951.07, 4186.01};
@@ -37,6 +38,9 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
     Thread mDispatcherThread;
 
     private FragmentManager mFragmentManager;
+    private GuessFrequencyFragment mGuessFrequencyFrag;
+    private MatchFrequencyFragment mMatchFrequencyFrag;
+    private Fragment mCurrentFrag;
 
 //    TabLayout.Tab guessTab, matchTab;
 
@@ -45,11 +49,12 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_actvity);
 
+        mCurrentFrag= (Fragment) new GuessFrequencyFragment();
         mFragmentManager= getSupportFragmentManager();
         mFragmentManager.enableDebugLogging(true);
         FragmentTransaction fragmentTransaction = mFragmentManager
                 .beginTransaction();
-        fragmentTransaction.add(R.id.fragmentContainer, new GuessFrequencyFragment());
+        fragmentTransaction.add(R.id.fragmentContainer, mCurrentFrag);
         fragmentTransaction.commit();
 
 //        TabLayout tabLayout = new TabLayout(getApplicationContext());
@@ -68,6 +73,32 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id= item.getItemId();
+
+        if (id==R.id.mic_button) {
+            if (mCurrentFrag instanceof MatchFrequencyFragment) {
+                return true;
+            } else {
+                Log.i(TAG, "new matchFrag");
+                mCurrentFrag= new MatchFrequencyFragment();
+            }
+        } else if (id==R.id.ear_button) {
+            if (mCurrentFrag instanceof GuessFrequencyFragment) {
+                return true;
+            } else {
+                Log.i(TAG, "new freqFrag");
+                mCurrentFrag= new GuessFrequencyFragment();
+            }
+        }
+        FragmentTransaction fragmentTransaction= mFragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, mCurrentFrag);
+        fragmentTransaction.commit();
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void playWave() {
@@ -92,24 +123,25 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
     }
 
     public void startPitchDetector() {
-        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
-
-        PitchDetectionHandler pdh = new PitchDetectionHandler() {
-            @Override
-            public void handlePitch(PitchDetectionResult result, AudioEvent e) {
-                final float pitchInHz = result.getPitch();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView text = (TextView) findViewById(R.id.pitchDetectorText);
-                        text.setText("" + pitchInHz);
-                    }
-                });
-            }
-        };
-        AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
-        dispatcher.addAudioProcessor(p);
-        mDispatcherThread = new Thread(dispatcher, "Audio Dispatcher");
-        mDispatcherThread.start();
+        Toast.makeText(getApplicationContext(), "matchPitch Created", Toast.LENGTH_SHORT).show();
+//        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+//
+//        PitchDetectionHandler pdh = new PitchDetectionHandler() {
+//            @Override
+//            public void handlePitch(PitchDetectionResult result, AudioEvent e) {
+//                final float pitchInHz = result.getPitch();
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        TextView text = (TextView) findViewById(R.id.pitchDetectorText);
+//                        text.setText("" + pitchInHz);
+//                    }
+//                });
+//            }
+//        };
+//        AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
+//        dispatcher.addAudioProcessor(p);
+//        mDispatcherThread = new Thread(dispatcher, "Audio Dispatcher");
+//        mDispatcherThread.start();
     }
 }

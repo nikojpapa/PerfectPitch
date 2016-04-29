@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link GuessFrequencyFragment.GuessFrequencyFragCreated} interface
+ * {@link GuessFrequencyFragment.GuessFrequencyFragListener} interface
  * to handle interaction events.
  * Use the {@link GuessFrequencyFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -27,7 +27,7 @@ public class GuessFrequencyFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private GuessFrequencyFragCreated mListener;
+    private GuessFrequencyFragListener mListener;
 
     public GuessFrequencyFragment() {
         // Required empty public constructor
@@ -77,8 +77,8 @@ public class GuessFrequencyFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof GuessFrequencyFragCreated) {
-            mListener = (GuessFrequencyFragCreated) context;
+        if (context instanceof GuessFrequencyFragListener) {
+            mListener = (GuessFrequencyFragListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -107,8 +107,9 @@ public class GuessFrequencyFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface GuessFrequencyFragCreated {
+    public interface GuessFrequencyFragListener {
         // TODO: Update argument type and name
         void setPlayButtonListener();
+//        void disableButton(String id);
     }
 }

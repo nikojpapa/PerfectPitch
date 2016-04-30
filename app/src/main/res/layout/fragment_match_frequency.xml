@@ -1,18 +1,75 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.papad.perfectpitch.MatchFrequencyFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_alignParentTop="true"
+              android:layout_alignParentStart="true"
+              tools:context="com.papad.perfectpitch.MatchFrequencyFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Sing/play a note between:"
+        android:id="@+id/freq_range_text"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"/>
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/radio_container"
+        android:layout_marginLeft="0dp"
+        android:layout_below="@+id/freq_range_text"
+        android:layout_marginBottom="77dp"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Easy"
+                android:id="@+id/radio_easy"
+                android:checked="false"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Medium"
+                android:id="@+id/radio_medium"
+                android:checked="true"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hard"
+                android:id="@+id/radio_hard"/>
+        </LinearLayout>
+    </RadioGroup>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Frequency"
+        android:id="@+id/new_freq_btn"
+        android:layout_marginLeft="0dp"
+        android:layout_below="@+id/radio_container"
+        android:layout_gravity="top|center_horizontal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="No Frequency"
-        android:id="@+id/pitchDetectorText"
-        android:layout_below="@+id/playButton"
-        android:layout_alignStart="@+id/playButton"
-        android:layout_gravity="center_horizontal|top"/>
-</FrameLayout>
+        android:id="@+id/detected_freq"
+        android:layout_below="@+id/detected_freq"
+        android:layout_gravity="center"/>
+</LinearLayout>

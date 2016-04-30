@@ -1,7 +1,9 @@
 package com.papad.perfectpitch;
 
 import android.net.Uri;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,6 +22,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -39,6 +43,8 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
     private Random rand= new Random();
 
     Thread mDispatcherThread;
+    AudioDispatcher mDispatcher;
+    PitchDetectionHandler pdh;
 
     private FragmentManager mFragmentManager;
     private GuessFrequencyFragment mGuessFrequencyFrag;
@@ -68,6 +74,26 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
 //        tabLayout.addTab(matchTab);
 
 //        tabLayout.setOnTabSelectedListener();
+
+        pdh = new PitchDetectionHandler() {
+            @Override
+            public void handlePitch(PitchDetectionResult result, AudioEvent e) {
+                final float pitchInHz = result.getPitch();
+                Log.i(TAG, ""+pitchInHz);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView text = (TextView) findViewById(R.id.last_result);
+                        if (pitchInHz!=-1) {
+                            text.setText("" + pitchInHz);
+                            mDispatcher.stop();
+                        } else {
+                            text.setText("...");
+                        }
+                    }
+                });
+            }
+        };
 
     }
 
@@ -130,6 +156,35 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         freqRangeHigh.setText(""+frequencies[highIndex]);
     }
 
+    private void captureFreq(final int delayInSeconds) {
+
+        mDispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024,
+                0);
+        AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
+        mDispatcher.addAudioProcessor(p);
+
+        mDispatcherThread = new Thread(mDispatcher, "Audio Dispatcher");
+
+        final Timer countdown= new Timer();
+        countdown.scheduleAtFixedRate(new TimerTask() {
+            private int counter= delayInSeconds;
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (counter==0) {
+                            mDispatcherThread.start();
+                            countdown.cancel();
+                        }
+                        TextView lastResult= (TextView) findViewById(R.id.last_result);
+                        lastResult.setText(""+counter--);
+                    }
+                });
+            }
+        }, 0, 1000);
+    }
+
     private void playWave() {
         int newIndex= rand.nextInt(88);
         double waveFreq= frequencies[newIndex];
@@ -151,36 +206,19 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         });
     }
 
-    public void setNewRangeListener() {
+    public void startPitchDetector() {
         Button newFreqBtn= (Button) findViewById(R.id.new_freq_btn);
-
         newFreqBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 randRange();
             }
         });
-    }
 
-    public void startPitchDetector() {
-        setNewRangeListener();
-//        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
-//
-//        PitchDetectionHandler pdh = new PitchDetectionHandler() {
-//            @Override
-//            public void handlePitch(PitchDetectionResult result, AudioEvent e) {
-//                final float pitchInHz = result.getPitch();
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        TextView text = (TextView) findViewById(R.id.pitchDetectorText);
-//                        text.setText("" + pitchInHz);
-//                    }
-//                });
-//            }
-//        };
-//        AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
-//        dispatcher.addAudioProcessor(p);
-//        mDispatcherThread = new Thread(dispatcher, "Audio Dispatcher");
-//        mDispatcherThread.start();
+        Button captureBtn= (Button) findViewById(R.id.capture_btn);
+        captureBtn.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                captureFreq(3);
+            }
+        });
     }
 }

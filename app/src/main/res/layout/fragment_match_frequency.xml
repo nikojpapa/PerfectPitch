@@ -93,12 +93,41 @@
         android:layout_below="@+id/radio_container"
         android:layout_gravity="top|center_horizontal"/>
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="No Frequency"
-        android:id="@+id/detected_freq"
-        android:layout_below="@+id/detected_freq"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Last Attempt: "
+            android:id="@+id/last_label"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="0"
+            android:id="@+id/last_result"
+            android:background="#ffe100"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text=" Hz"
+            android:id="@+id/last_hz"/>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Capture Frequency"
+        android:id="@+id/capture_btn"
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>

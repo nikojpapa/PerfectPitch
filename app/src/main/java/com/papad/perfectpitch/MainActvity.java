@@ -12,10 +12,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import be.tarsos.dsp.AudioDispatcher;
@@ -101,6 +104,32 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         return super.onOptionsItemSelected(item);
     }
 
+    private void randRange() {
+        int range= 0;
+        RadioGroup difficulties= (RadioGroup) findViewById(R.id.radio_container);
+        switch (difficulties.getCheckedRadioButtonId()) {
+            case (R.id.radio_easy):
+                range= 44;
+                break;
+            case (R.id.radio_medium):
+                range= 22;
+                break;
+            case (R.id.radio_hard):
+                range= 11;
+                break;
+        }
+        int lowIndex= rand.nextInt(88-range);
+        int highIndex= lowIndex+range;
+//        HashMap<String, Integer> range= new HashMap<String, Integer>(2);
+//        range.put("lowIndex", lowIndex);
+//        range.put("highIndex", highIndex);
+
+        TextView freqRangeLow= (TextView) findViewById(R.id.freq_range_low);
+        freqRangeLow.setText(""+frequencies[lowIndex]);
+        TextView freqRangeHigh= (TextView) findViewById(R.id.freq_range_high);
+        freqRangeHigh.setText(""+frequencies[highIndex]);
+    }
+
     private void playWave() {
         int newIndex= rand.nextInt(88);
         double waveFreq= frequencies[newIndex];
@@ -122,8 +151,18 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         });
     }
 
+    public void setNewRangeListener() {
+        Button newFreqBtn= (Button) findViewById(R.id.new_freq_btn);
+
+        newFreqBtn.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                randRange();
+            }
+        });
+    }
+
     public void startPitchDetector() {
-        Toast.makeText(getApplicationContext(), "matchPitch Created", Toast.LENGTH_SHORT).show();
+        setNewRangeListener();
 //        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 //
 //        PitchDetectionHandler pdh = new PitchDetectionHandler() {

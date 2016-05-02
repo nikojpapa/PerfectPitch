@@ -47,8 +47,6 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
     PitchDetectionHandler pdh;
 
     private FragmentManager mFragmentManager;
-    private GuessFrequencyFragment mGuessFrequencyFrag;
-    private MatchFrequencyFragment mMatchFrequencyFrag;
     private Fragment mCurrentFrag;
 
 //    TabLayout.Tab guessTab, matchTab;
@@ -195,10 +193,9 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
         new PlayWave().execute(waveFreq);
     }
 
-    public void setPlayButtonListener() {
+    public void startGuessFrag() {
         Log.i(TAG, "play button initiated");
         Button play440= (Button) findViewById(R.id.playButton);
-
         play440.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 playWave();

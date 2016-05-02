@@ -88,7 +88,7 @@ public class GuessFrequencyFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mListener.setPlayButtonListener();
+        mListener.startGuessFrag();
     }
 
     @Override
@@ -109,7 +109,7 @@ public class GuessFrequencyFragment extends Fragment {
      */
     public interface GuessFrequencyFragListener {
         // TODO: Update argument type and name
-        void setPlayButtonListener();
+        void startGuessFrag();
 //        void disableButton(String id);
     }
 }

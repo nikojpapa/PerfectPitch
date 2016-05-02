@@ -1,5 +1,6 @@
 package com.papad.perfectpitch;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
@@ -120,6 +121,10 @@ public class MainActvity extends AppCompatActivity implements GuessFrequencyFrag
                 Log.i(TAG, "new freqFrag");
                 mCurrentFrag= new GuessFrequencyFragment();
             }
+        } else if (id==R.id.graph_button) {
+            Intent graphIntent= new Intent(this, DynamicXYPlotActivity.class);
+            startActivity(graphIntent);
+            return true;
         }
         FragmentTransaction fragmentTransaction= mFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, mCurrentFrag);

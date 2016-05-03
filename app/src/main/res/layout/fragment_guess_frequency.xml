@@ -6,6 +6,32 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="122dp"
+        android:layout_gravity="right|top"
+        android:id="@+id/instrument_group">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guitar"
+            android:id="@+id/guitar_button" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bell"
+            android:id="@+id/bell_button" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clarinet"
+            android:id="@+id/clarinet_button" />
+
+    </RadioGroup>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,34 +39,31 @@
         android:id="@+id/playButton"
         android:layout_below="@+id/textView"
         android:layout_toEndOf="@+id/textView"
-        android:layout_gravity="center"/>
+        android:layout_gravity="right|top" />
 
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/submit_freq"
+        android:layout_gravity="right|center_vertical"
+        android:onClick="submit_freq" />
+
+    <EditText
+        android:layout_width="236dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/guess_message"
         android:layout_gravity="center_horizontal|bottom"
-        android:id="@+id/instrument_group">
+        android:editable="false" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Guitar"
-            android:id="@+id/guitar_button"
-            android:layout_gravity="center_horizontal" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bell"
-            android:id="@+id/bell_button"
-            android:layout_gravity="center_horizontal" />
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clarinet"
-            android:id="@+id/clarinet_button"
-            android:layout_gravity="center_horizontal" />
-    </RadioGroup>
+    <EditText
+        android:layout_width="284dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/guess_freq"
+        android:layout_gravity="left|center_vertical"
+        android:hint="What Freq Do You Think This Is?" />
 
 </FrameLayout>

@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Random;
@@ -38,6 +40,7 @@ public class GuessFrequencyFragment extends Fragment {
     private Random rand;
     private MainActivity mActivity;
     private String instrument = "";
+    private double current_freq;
 
     private GuessFrequencyFragListener mListener;
 
@@ -111,14 +114,15 @@ public class GuessFrequencyFragment extends Fragment {
         mListener = null;
     }
 
-    private void playWave(String instrument) {
-        int newIndex= rand.nextInt(88);
-        double waveFreq= mActivity.frequencies[newIndex];
-        String noteName= mActivity.noteNames[newIndex];
+    private void playWave(String instrument, double waveFreq, String noteName) {
+
 
         Toast.makeText(getContext(), "Playing " + noteName + " at " + waveFreq + "Hz", Toast
                 .LENGTH_SHORT).show();
         new PlayWave(instrument, waveFreq).execute(waveFreq);
+
+
+
     }
 
     public void setListeners() {
@@ -139,11 +143,45 @@ public class GuessFrequencyFragment extends Fragment {
                 break;
         }
 
+
+
         play440.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                playWave(instrument);
+                int newIndex= rand.nextInt(88);
+                final double waveFreq= mActivity.frequencies[newIndex];
+                current_freq = waveFreq;
+                final String noteName= mActivity.noteNames[newIndex];
+                playWave(instrument, waveFreq, noteName);
             }
         });
+
+        Button submit_freq = (Button)getView().findViewById(R.id.submit_freq);
+        submit_freq.setOnClickListener(new Button.OnClickListener(){
+            public void onClick(View v){
+                EditText current_guess = (EditText)getView().findViewById(R.id.guess_freq);
+                double user_guess = Double.parseDouble(current_guess.getText().toString());
+                Log.i("GUESS", "current guess = " + user_guess);
+                TextView guess_message = (TextView) getView().findViewById(R.id.guess_message);
+                if(user_guess < current_freq-30){
+                    guess_message.setText("Try A Higher Frequency!");
+                    Log.i("HIGHER", "TRY HIGHER!");
+                }
+                else if(user_guess > current_freq+30){
+                    guess_message.setText("Try A Lower Frequency!");
+                    Log.i("LOWER", "TRY LOWER!");
+                }
+                else{
+                    guess_message.setText("Close Enough! The correct frequency is " + current_freq + " Hz.");
+                    Log.i("CORRECT", "CLOSE ENOUGH!");
+                }
+
+            }
+
+        });
+
+
+
+
     }
 
     /**

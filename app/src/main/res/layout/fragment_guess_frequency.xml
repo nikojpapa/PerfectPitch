@@ -1,61 +1,73 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.papad.perfectpitch.GuessFrequencyFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.papad.perfectpitch.GuessFrequencyFragment"
+    android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
 
     <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:layout_gravity="right|top"
-        android:id="@+id/instrument_group">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/instrument_group"
+        android:layout_row="0"
+        android:layout_column="3">
 
-        <RadioButton
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Guitar"
-            android:id="@+id/guitar_button" />
+            android:orientation="horizontal">
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bell"
-            android:id="@+id/bell_button" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guitar"
+                android:id="@+id/guitar_button"/>
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clarinet"
-            android:id="@+id/clarinet_button" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bell"
+                android:id="@+id/bell_button"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clarinet"
+                android:id="@+id/clarinet_button"/>
+
+        </LinearLayout>
 
     </RadioGroup>
 
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play Random Frequency"
-        android:id="@+id/playButton"
-        android:layout_below="@+id/textView"
-        android:layout_toEndOf="@+id/textView"
-        android:layout_gravity="right|top" />
+        android:layout_height="wrap_content">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Submit"
-        android:id="@+id/submit_freq"
-        android:layout_gravity="right|center_vertical"
-        android:onClick="submit_freq" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play Random Frequency"
+            android:id="@+id/playButton"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Replay Frequency"
+            android:id="@+id/replayButton"/>
+
+    </LinearLayout>
+
+
 
     <EditText
         android:layout_width="236dp"
         android:layout_height="wrap_content"
         android:id="@+id/guess_message"
-        android:layout_gravity="center_horizontal|bottom"
-        android:editable="false" />
+        android:editable="false"
+        android:layout_row="10"
+        android:layout_column="1" />
 
     <EditText
         android:layout_width="284dp"
@@ -63,7 +75,18 @@
         android:inputType="number"
         android:ems="10"
         android:id="@+id/guess_freq"
-        android:layout_gravity="left|center_vertical"
-        android:hint="What Freq Do You Think This Is?" />
+        android:hint="What Freq Do You Think This Is?"
+        android:layout_row="11"
+        android:layout_column="1" />
 
-</FrameLayout>
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/submit_freq"
+        android:onClick="submit_freq"
+        android:layout_row="1"
+        android:layout_column="3" />
+
+</LinearLayout>

@@ -41,6 +41,7 @@ public class GuessFrequencyFragment extends Fragment {
     private MainActivity mActivity;
     private String instrument = "";
     private double current_freq;
+    private String current_name;
 
     private GuessFrequencyFragListener mListener;
 
@@ -115,19 +116,13 @@ public class GuessFrequencyFragment extends Fragment {
     }
 
     private void playWave(String instrument, double waveFreq, String noteName) {
-
-
-        Toast.makeText(getContext(), "Playing " + noteName + " at " + waveFreq + "Hz", Toast
-                .LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "Playing " + noteName + " at " + waveFreq + "Hz", Toast
+//                .LENGTH_SHORT).show();
         new PlayWave(instrument, waveFreq).execute(waveFreq);
-
-
-
     }
 
     public void setListeners() {
         Log.i(TAG, "play button initiated");
-        Button play440= (Button) getView().findViewById(R.id.playButton);
 
         RadioGroup instruments= (RadioGroup) getView().findViewById(R.id.instrument_group);
         instruments.check(R.id.clarinet_button);
@@ -144,14 +139,22 @@ public class GuessFrequencyFragment extends Fragment {
         }
 
 
-
+        Button play440= (Button) getView().findViewById(R.id.playButton);
         play440.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 int newIndex= rand.nextInt(88);
                 final double waveFreq= mActivity.frequencies[newIndex];
                 current_freq = waveFreq;
-                final String noteName= mActivity.noteNames[newIndex];
-                playWave(instrument, waveFreq, noteName);
+                current_name= mActivity.noteNames[newIndex];
+                playWave(instrument, waveFreq, current_name);
+            }
+        });
+
+        Button replayBtn= (Button) getView().findViewById(R.id.replayButton);
+        replayBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playWave(instrument, current_freq, current_name);
             }
         });
 

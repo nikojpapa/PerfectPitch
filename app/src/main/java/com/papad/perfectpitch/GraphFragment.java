@@ -125,7 +125,8 @@ public class GraphFragment extends Fragment {
                     @Override
                     public void run() {
                     TextView text = (TextView) getView().findViewById(R.id.current_freq);
-                    text.setText("" + pitchInHz);
+                    if (pitchInHz!=-1) text.setText("" + pitchInHz);
+                    else text.setText("0");
                     }
                 });
             }
@@ -169,8 +170,8 @@ public class GraphFragment extends Fragment {
 
         // getInstance and position datasets:
         data = new SampleDynamicXYDatasource();
-        SampleDynamicSeries sine1Series = new SampleDynamicSeries(data, 0, "Sine 1");
-        SampleDynamicSeries sine2Series = new SampleDynamicSeries(data, 1, "Sine 2");
+        SampleDynamicSeries sine1Series = new SampleDynamicSeries(data, 0, "Your Freq");
+        SampleDynamicSeries sine2Series = new SampleDynamicSeries(data, 1, "440 Hz");
 
         LineAndPointFormatter formatter1 = new LineAndPointFormatter(
                 Color.rgb(0, 0, 0), null, null, null);

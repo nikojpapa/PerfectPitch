@@ -334,7 +334,6 @@ public class GraphFragment extends Fragment {
 //            else return 0;
             switch (series) {
                 case SINE1:
-                    Log.i(TAG, ""+currentFreq);
                     double increment = (2 * Math.PI * currentFreq / 44100);
                     return sinAmp * Math.sin((index+phase)*increment);
                 case SINE2:

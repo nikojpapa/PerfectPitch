@@ -334,6 +334,6 @@ public class GraphFragment extends Fragment {
      */
     public interface GraphFragmentListener {
         // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
+//        double captureFreq();
     }
 }

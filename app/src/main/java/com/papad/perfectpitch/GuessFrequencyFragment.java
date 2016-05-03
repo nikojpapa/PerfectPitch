@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.Random;
@@ -36,6 +37,7 @@ public class GuessFrequencyFragment extends Fragment {
 
     private Random rand;
     private MainActivity mActivity;
+    private String instrument = "";
 
     private GuessFrequencyFragListener mListener;
 
@@ -109,22 +111,37 @@ public class GuessFrequencyFragment extends Fragment {
         mListener = null;
     }
 
-    private void playWave() {
+    private void playWave(String instrument) {
         int newIndex= rand.nextInt(88);
         double waveFreq= mActivity.frequencies[newIndex];
         String noteName= mActivity.noteNames[newIndex];
 
         Toast.makeText(getContext(), "Playing " + noteName + " at " + waveFreq + "Hz", Toast
                 .LENGTH_SHORT).show();
-        new PlayWave().execute(waveFreq);
+        new PlayWave(instrument, waveFreq).execute(waveFreq);
     }
 
     public void setListeners() {
         Log.i(TAG, "play button initiated");
         Button play440= (Button) getView().findViewById(R.id.playButton);
+
+        RadioGroup instruments= (RadioGroup) getView().findViewById(R.id.instrument_group);
+        instruments.check(R.id.clarinet_button);
+        switch (instruments.getCheckedRadioButtonId()) {
+            case (R.id.guitar_button):
+                instrument = "guitar";
+                break;
+            case (R.id.clarinet_button):
+                instrument = "clarinet";
+                break;
+            case (R.id.bell_button):
+                instrument = "bell";
+                break;
+        }
+
         play440.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                playWave();
+                playWave(instrument);
             }
         });
     }

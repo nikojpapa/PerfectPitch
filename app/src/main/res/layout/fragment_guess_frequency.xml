@@ -13,5 +13,34 @@
         android:id="@+id/playButton"
         android:layout_below="@+id/textView"
         android:layout_toEndOf="@+id/textView"
-        android:layout_gravity="center_horizontal|top"/>
+        android:layout_gravity="center"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal|bottom"
+        android:id="@+id/instrument_group">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Guitar"
+            android:id="@+id/guitar_button"
+            android:layout_gravity="center_horizontal" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bell"
+            android:id="@+id/bell_button"
+            android:layout_gravity="center_horizontal" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clarinet"
+            android:id="@+id/clarinet_button"
+            android:layout_gravity="center_horizontal" />
+    </RadioGroup>
+
 </FrameLayout>

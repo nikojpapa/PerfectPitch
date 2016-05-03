@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidplot.Plot;
@@ -23,6 +24,16 @@ import com.androidplot.xy.*;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.AudioEvent;
+import be.tarsos.dsp.AudioProcessor;
+import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+import be.tarsos.dsp.pitch.PitchDetectionHandler;
+import be.tarsos.dsp.pitch.PitchDetectionResult;
+import be.tarsos.dsp.pitch.PitchProcessor;
 
 
 /**
@@ -53,7 +64,7 @@ public class GraphFragment extends Fragment {
 
     private XYPlot dynamicPlot;
     private MyPlotUpdater plotUpdater;
-    SampleDynamicXYDatasource data;
+    private SampleDynamicXYDatasource data;
     private Thread myThread;
 
 //    // TODO: Rename parameter arguments, choose names that match
@@ -65,7 +76,13 @@ public class GraphFragment extends Fragment {
 //    private String mParam1;
 //    private String mParam2;
 
+    private Thread mDispatcherThread;
+    private AudioDispatcher mDispatcher;
+    private PitchDetectionHandler pdh;
+//    private double mCurrentFreq;
+
     private GraphFragmentListener mListener;
+    private MainActivity mActivity;
 
     /**
      * Use this factory method to create a new instance of
@@ -96,6 +113,23 @@ public class GraphFragment extends Fragment {
 //            mParam2 = getArguments().getString(ARG_PARAM2);
 //        }
 
+        mActivity= (MainActivity) getActivity();
+
+        pdh = new PitchDetectionHandler() {
+            @Override
+            public void handlePitch(PitchDetectionResult result, AudioEvent e) {
+                final float pitchInHz = result.getPitch();
+                Log.i(TAG, ""+pitchInHz);
+                data.setCurrentFreq(pitchInHz);
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    TextView text = (TextView) getView().findViewById(R.id.current_freq);
+                    text.setText("" + pitchInHz);
+                    }
+                });
+            }
+        };
     }
 
     @Override
@@ -136,7 +170,7 @@ public class GraphFragment extends Fragment {
         // getInstance and position datasets:
         data = new SampleDynamicXYDatasource();
         SampleDynamicSeries sine1Series = new SampleDynamicSeries(data, 0, "Sine 1");
-//        SampleDynamicSeries sine2Series = new SampleDynamicSeries(data, 1, "Sine 2");
+        SampleDynamicSeries sine2Series = new SampleDynamicSeries(data, 1, "Sine 2");
 
         LineAndPointFormatter formatter1 = new LineAndPointFormatter(
                 Color.rgb(0, 0, 0), null, null, null);
@@ -145,13 +179,13 @@ public class GraphFragment extends Fragment {
         dynamicPlot.addSeries(sine1Series,
                 formatter1);
 
-//        LineAndPointFormatter formatter2 =
-//                new LineAndPointFormatter(Color.rgb(0, 0, 200), null, null, null);
-//        formatter2.getLinePaint().setStrokeWidth(10);
-//        formatter2.getLinePaint().setStrokeJoin(Paint.Join.ROUND);
+        LineAndPointFormatter formatter2 =
+                new LineAndPointFormatter(Color.rgb(0, 0, 200), null, null, null);
+        formatter2.getLinePaint().setStrokeWidth(10);
+        formatter2.getLinePaint().setStrokeJoin(Paint.Join.ROUND);
 
         //formatter2.getFillPaint().setAlpha(220);
-//        dynamicPlot.addSeries(sine2Series, formatter2);
+        dynamicPlot.addSeries(sine2Series, formatter2);
 
         // hook up the plotUpdater to the data model:
         data.addObserver(plotUpdater);
@@ -180,12 +214,22 @@ public class GraphFragment extends Fragment {
         // kick off the data generating thread:
         myThread = new Thread(data);
         myThread.start();
+
+        mDispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024,
+                0);
+        AudioProcessor p = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
+        mDispatcher.addAudioProcessor(p);
+
+        mDispatcherThread = new Thread(mDispatcher, "Audio Dispatcher");
+        mDispatcherThread.start();
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         data.stopThread();
+        mDispatcher.stop();
         super.onPause();
     }
 
@@ -195,7 +239,16 @@ public class GraphFragment extends Fragment {
         mListener = null;
     }
 
+//    public double getCurrentFreq() {
+//        return mCurrentFreq;
+//    }
+
     class SampleDynamicXYDatasource implements Runnable {
+        private double currentFreq=0;
+
+//        public SampleDynamicXYDatasource(double freq) {
+//            currentFreq= freq;
+//        }
 
         // encapsulates management of the observers watching this datasource for update events:
         class MyObservable extends Observable {
@@ -206,7 +259,8 @@ public class GraphFragment extends Fragment {
             }
         }
 
-        private static final double FREQUENCY = 5; // larger is lower frequency
+        private static final double FREQUENCY = 5; // larger is lower
+        // frequency
         private static final int MAX_AMP_SEED = 100;
         private static final int MIN_AMP_SEED = 10;
         private static final int AMP_STEP = 1;
@@ -214,12 +268,16 @@ public class GraphFragment extends Fragment {
         public static final int SINE2 = 1;
         private static final int SAMPLE_SIZE = 30;
         private int phase = 0;
-        private int sinAmp = 1;
+        private int sinAmp = 50;
         private MyObservable notifier;
         private boolean keepRunning = false;
 
         {
             notifier = new MyObservable();
+        }
+
+        public void setCurrentFreq(double freq) {
+            currentFreq= freq;
         }
 
         public void stopThread() {
@@ -235,17 +293,17 @@ public class GraphFragment extends Fragment {
 
                     Thread.sleep(10); // decrease or remove to speed up the refresh rate.
                     phase++;
-                    if (sinAmp >= MAX_AMP_SEED) {
-                        isRising = false;
-                    } else if (sinAmp <= MIN_AMP_SEED) {
-                        isRising = true;
-                    }
-
-                    if (isRising) {
-                        sinAmp += AMP_STEP;
-                    } else {
-                        sinAmp -= AMP_STEP;
-                    }
+//                    if (sinAmp >= MAX_AMP_SEED) {
+//                        isRising = false;
+//                    } else if (sinAmp <= MIN_AMP_SEED) {
+//                        isRising = true;
+//                    }
+//
+//                    if (isRising) {
+//                        sinAmp += AMP_STEP;
+//                    } else {
+//                        sinAmp -= AMP_STEP;
+//                    }
                     notifier.notifyObservers();
                 }
             } catch (InterruptedException e) {
@@ -268,13 +326,20 @@ public class GraphFragment extends Fragment {
             if (index >= SAMPLE_SIZE) {
                 throw new IllegalArgumentException();
             }
-            double angle = (index + (phase))/FREQUENCY;
-            double amp = sinAmp * Math.sin(angle);
+//            double angle = (index + (phase))/currentFreq;
+//            double amp = sinAmp * Math.sin(angle);
+
+//            double amp;
+//            if (currentFreq!=1) amp= sinAmp * Math.sin(2*Math.PI*currentFreq*(index/44100)+phase);
+//            else return 0;
             switch (series) {
                 case SINE1:
-                    return amp;
+                    Log.i(TAG, ""+currentFreq);
+                    double increment = (2 * Math.PI * currentFreq / 44100);
+                    return sinAmp * Math.sin((index+phase)*increment);
                 case SINE2:
-                    return -amp;
+                    increment = (2 * Math.PI * 440 / 44100);
+                    return sinAmp * Math.sin((index+phase)*increment);
                 default:
                     throw new IllegalArgumentException();
             }

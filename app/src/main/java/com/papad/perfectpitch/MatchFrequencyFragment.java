@@ -43,9 +43,9 @@ public class MatchFrequencyFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private Random rand;
 
-    Thread mDispatcherThread;
-    AudioDispatcher mDispatcher;
-    PitchDetectionHandler pdh;
+    private Thread mDispatcherThread;
+    private AudioDispatcher mDispatcher;
+    private PitchDetectionHandler pdh;
 
     private MatchFrequencyFragListener mListener;
 
@@ -183,7 +183,7 @@ public class MatchFrequencyFragment extends Fragment {
         freqRangeHigh.setText(""+mActivity.frequencies[highIndex]);
     }
 
-    public void captureFreq() {
+    private void captureFreq() {
 
         mDispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024,
                 0);
